@@ -1,0 +1,11 @@
+---
+- hosts: proxy
+  tasks:
+  - name: Run backup script every day at 2 AM
+    ansible.builtin.cron:
+      name: "Hourly date log"
+      minute: "0"
+      job: "/usr/bin/date >> /var/log/time.log"
+      user: root
+      state: present
+    become: true
