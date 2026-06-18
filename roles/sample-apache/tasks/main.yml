@@ -1,0 +1,5 @@
+---
+- name: Setup proxy
+  include_tasks: proxy-setup.yml
+- name: Setup apache server
+  include_tasks: apache-setup.yml
