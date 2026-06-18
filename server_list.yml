@@ -1,7 +1,9 @@
 ---
-- hosts: database
+- name: Create server list file that contains all inventory hosts on databse host group
+  hosts: database
   tasks:
-    - ansible.builtin.template:
+    - name: Create server list file from template
+      ansible.builtin.template:
         src: ./server_list.j2
         dest: /etc/server_list.txt
         owner: automation
