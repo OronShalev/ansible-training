@@ -1,8 +1,10 @@
 ---
-- hosts: database
+- name: Adding custom Ansible fact on hosts in the database host group
+  hosts: database
   become: true
+  
   tasks:
-    - name: Create facts directory
+    - name: Create custom facts directory
       ansible.builtin.file:
         path: /etc/ansible/facts.d
         state: directory
@@ -10,7 +12,7 @@
         group: root
         mode: '0755'
 
-    - name: Deploy application fact file
+    - name: Deploy custom fact file with server_role=mysql fact
       ansible.builtin.copy:
         dest: /etc/ansible/facts.d/custom.fact
         content: '{ "sample_exam": { "server_role": "mysql" } }'
@@ -24,4 +26,4 @@
 
     - name: Display custom facts
       ansible.builtin.debug:
-        msg: "{{ ansible_local.custom.sample_exam }}"
+        msg: "{{ ansible_local.custom }}"
