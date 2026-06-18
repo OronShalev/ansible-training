@@ -1,10 +1,12 @@
 ---
-- hosts: proxy
+- name: Configure Haproxy load balancer and firewall on proxy servers
+  hosts: proxy
   become: true
 
   vars:
     haproxy_backend_balance_method: 'roundrobin'
     haproxy_backend_mode: 'http'
+    # template for creating backend server list item from a given host
     haproxy_backend_server_template:
       name: "{{ item }}"
       address: "{{ hostvars[item].ansible_host }}:80"
@@ -15,7 +17,8 @@
         haproxy_backend_servers: "{{ (haproxy_backend_servers | default([])) + [haproxy_backend_server_template] }}"
       loop:  "{{ groups.webservers }}"
 
-    - debug: 
+    - name: Ensure that the backend servers list generated correctly
+      debug: 
         msg: "{{ haproxy_backend_servers }}"
 
   roles:
