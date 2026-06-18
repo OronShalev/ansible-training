@@ -1,0 +1,47 @@
+---
+- name: Configure Haproxy load balancer and firewall on proxy servers
+  hosts: proxy
+  become: true
+
+  vars:
+    haproxy_backend_balance_method: 'roundrobin'
+    haproxy_backend_mode: 'http'
+    # template for creating backend server list item from a given host
+    haproxy_backend_server_template:
+      name: "{{ item }}"
+      address: "{{ hostvars[item].ansible_host }}:80"
+
+  pre_tasks:
+    - name: generate haproxy_backend_servers from webservers group
+      set_fact:
+        haproxy_backend_servers: "{{ (haproxy_backend_servers | default([])) + [haproxy_backend_server_template] }}"
+      loop:  "{{ groups.webservers }}"
+
+    - name: Ensure that the backend servers list generated correctly
+      debug: 
+        msg: "{{ haproxy_backend_servers }}"
+
+  roles:
+    - geerlingguy.haproxy
+
+  tasks:
+    - name: Ensure firewalld is installed and running
+      ansible.builtin.yum:
+        name: firewalld
+        state: present
+      become: true
+
+    - name: Start and enable firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+      become: true
+
+    - name: Allow HTTP service permanently
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        immediate: true
+        state: enabled
+      become: true
