@@ -1,0 +1,5 @@
+---
+- name: Run sample-apache role on webservers group
+  hosts: webservers
+  roles:
+    - sample-apache

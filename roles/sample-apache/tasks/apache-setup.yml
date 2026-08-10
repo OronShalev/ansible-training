@@ -1,0 +1,23 @@
+---
+- name: install packages httpd, mod_ssl and php.
+  ansible.builtin.yum:
+    name:
+      - httpd
+      - mod_ssl
+      - php
+    state: present
+  become: true
+
+- name: Apache service is running and enabled on boot.
+  ansible.builtin.service:
+    name: httpd
+    state: started
+    enabled: true
+  become: true
+
+- name: create the index.html using Jinja2 template file
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: Restart Apache
+  become: true
