@@ -1,0 +1,12 @@
+---
+- name: Root crontab that logs the current date (runs every hour)
+  hosts: proxy
+  tasks:
+  - name: Create the hourly date log cron job
+    ansible.builtin.cron:
+      name: "Hourly date log"
+      minute: "0"
+      job: "/usr/bin/date >> /var/log/time.log"
+      user: root
+      state: present
+    become: true
